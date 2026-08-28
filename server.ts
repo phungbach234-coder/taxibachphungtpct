@@ -36,9 +36,9 @@ app.get('/api/app-frame', async (req, res) => {
   try {
     const response = await fetch('https://taxibachphungct.netlify.app');
     let html = await response.text();
-    html = html.replace(/src="\/assets\//g, 'src="/proxy/assets/');
-    html = html.replace(/href="\/assets\//g, 'href="/proxy/assets/');
-    html = html.replace(/href="\/favicon.ico"/g, 'href="/proxy/favicon.ico"');
+    // Đánh lừa React Router của trang Taxi gốc để nó không bị lỗi Not Found
+    const fixScript = `<script>window.history.replaceState(null, '', '/');</script>`;
+    html = html.replace('<head>', '<head>' + fixScript);
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   } catch (err) {
@@ -46,10 +46,10 @@ app.get('/api/app-frame', async (req, res) => {
   }
 });
 
-app.use('/proxy', createProxyMiddleware({
+// Chuyển hướng dữ liệu ngầm cho trang Taxi
+app.use(['/assets', '/favicon.ico'], createProxyMiddleware({
   target: 'https://taxibachphungct.netlify.app',
   changeOrigin: true,
-  pathRewrite: { '^/proxy': '' },
   on: {
     proxyRes: (proxyRes) => {
       delete proxyRes.headers['x-frame-options'];
