@@ -1,8 +1,0 @@
-{
-  "name": "Taxi Bách Phụng",
-  "short_name": "Taxi CT",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#facc15"
-}
